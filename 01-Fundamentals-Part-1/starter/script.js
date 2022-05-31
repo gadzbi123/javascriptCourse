@@ -69,7 +69,7 @@ if(avg1 >= 100 || avg2 >= 100)
     if(avg1 === avg2)
         console.log(`druzyny zremisowaly z iloscia ${avg1}`);
     else
-        console.log(`druzyna ${avg1 > avg2 ? 1 : 2} byla lepsza`);
+    console.log(`druzyna ${avg1 > avg2 ? 1 : 2} byla lepsza`);
 else
     console.log(`zadna druzyna nie miala 100 pkt`);
 
