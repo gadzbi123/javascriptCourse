@@ -342,3 +342,11 @@ const planesInLine = function (n = 2) {
 
 planesInLine(5);
 planesInLine();
+
+//  '_Delayed_Departure;fao93766109;txl2133758440;11:25+_Arrival;bru0943384722;fao93766109;11:45+_Delayed_Arrival;hel7439299980;fao93766109;12:05+_Departure;fao93766109;lis2323639855;12:30';
+
+console.log(flights.split('+'))
+for (const sentence of flights.split('+')) {
+  let [type,from,to,time] = sentence.split(';');
+  console.log(`${type.indexOf("Delayed") !== -1 ? '🔴 ':''}${type.replaceAll('_',' ')} from ${from.slice(0,3).toUpperCase()} to ${to.slice(0,3).toUpperCase()} at ${time}`)
+}

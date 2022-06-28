@@ -190,6 +190,8 @@ Afterwards, test with your own test data!
 GOOD LUCK 😀
 */
 
+let i = 1
+let bird = "✅";
 const toCamel = (sentence) => {
   let str = String(sentence.toLowerCase().trim());
   const array = str.split("_");
@@ -199,11 +201,10 @@ const toCamel = (sentence) => {
       array2.push(word);
       continue;
     }
-    array2.push(word.replace(word[0], word[0].toUpperCase()));
+    array2.push((word.replace(word[0], word[0].toUpperCase()).padEnd(20) + bird.repeat(i)));
   }
+  i++;
   let strCamel = array2.join("");
-  let bird = "✅";
-  strCamel = strCamel.padEnd(35) + bird.repeat();
   console.log(strCamel);
 };
 
