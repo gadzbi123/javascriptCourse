@@ -195,7 +195,6 @@ const staffUnique = [...new Set(staff)];
 console.log(staffUnique);
 console.log(new Set(staff).size);
 console.log(new Set('KacperNitkiewicz').size);
-*/
 
 const rest = new Map();
 rest.set('name', 'classico italiano');
@@ -215,5 +214,131 @@ let string;
 rest.get('open') < time && time < rest.get('close')
   ? (string = rest.get(true))
   : (string = rest.get(false));
-
+  
 console.log(string);
+
+
+const quest = new Map([
+  ['question', 'Whats best language?'],
+  [1, 'C'],
+  [2, 'Java'],
+  [3, 'JavaScript'],
+  ['correct', 3],
+  [true, 'Correct 😊😊'],
+  [false, 'Wrong'],
+]);
+
+console.log(quest);
+
+console.log(Object.entries(restaurant.openingHours));
+const openingsMap = new Map(Object.entries(restaurant.openingHours));
+console.log(openingsMap);
+
+console.log(quest.get('question'));
+for (const [key, value] of quest) {
+  if (typeof key === 'number') {
+    console.log(`Answer ${key}: ${value}`);
+  }
+}
+
+const answer = Number(prompt('your answer'));
+console.log(
+  answer === quest.get('correct') ? quest.get(true) : quest.get(false)
+  );
+  
+  console.log(...quest.keys());
+  console.log(...quest.values());
+  */
+const airline = 'Wizzair Poland Incorporated';
+const plane = 'A320';
+/*
+
+console.log('ABC'[1]);
+console.log('ABC'.length);
+
+console.log(airline.indexOf('z'));
+console.log(airline.lastIndexOf('i'));
+
+console.log(airline.slice(8));
+console.log(airline.slice(8, 11));
+
+console.log(airline.slice(0, airline.indexOf(' ')));
+console.log(airline.slice(airline.lastIndexOf(' ') + 1));
+
+console.log(airline.slice(-3, -1));
+
+const checkMiddleSeat = seat => {
+  console.log(
+    `${
+      seat.indexOf('B') !== -1 || seat.indexOf('E') !== -1 ? '' : 'Non-'
+    }Middle Seat`
+  );
+};
+
+checkMiddleSeat('11B');
+
+
+const passenger = 'jOnAs';
+const passengerLower = passenger.toLowerCase();
+const passengerUpper = passenger[0].toUpperCase();
+const passengerCorrect = passengerUpper + passengerLower.slice(1);
+console.log(passenger);
+console.log(passengerCorrect);
+
+//Compare emai;1
+const email = 'yo@kacper.pl';
+const loginEmail = 'yo@kacper.pl \n';
+
+const normalized = loginEmail.toLowerCase().trim();
+console.log(normalized);
+
+const prizeEU = '111,23E';
+const prizeUS = prizeEU.replace(',', '.').replace('E', '$');
+console.log(prizeUS);
+
+const sentence = 'door is a big door with many doors';
+// const sentenceCorrect = sentence.replaceAll('door', 'window');
+const sentenceCorrect = sentence.replace(/door/g, 'window');
+console.log(sentenceCorrect);
+
+*/
+console.log('a+very+nice+string'.split('+'));
+console.log('Kacper Nitkiewicz '.trim().split(' '));
+const [firstName, lastName] = 'Kacper Nitkiewicz '.trim().split(' ');
+
+const newStr = ['Mgr', 'inż.', firstName, lastName].join(' ');
+console.log(newStr);
+
+function capitalizeName(name) {
+  const array = name.split(' ');
+  const namesUpper = [];
+  for (const n of array) {
+    // namesUpper.push(n[0].toUpperCase() + n.slice(1));
+    namesUpper.push(n.replace(n[0], n[0].toUpperCase()));
+  }
+  const returnVal = namesUpper.join(' ');
+  console.log(returnVal);
+  return returnVal;
+}
+
+console.log(capitalizeName('stefan romek szczepan').padStart(50, '-'));
+console.log(capitalizeName('arek czarek').padEnd(50, '+'));
+
+const maskCreditCard = number => {
+  const str = number + '';
+  const last = str.slice(-4);
+  return last.padStart(str.length, '*');
+};
+
+console.log(maskCreditCard('323520986287892753817241098471054'));
+
+//repeat
+const msg2 = 'Bad weather... All Departues Delayed... ';
+console.log(msg2.repeat(4));
+
+const planesInLine = function (n = 2) {
+  console.log(`There are ${n} planes in line ${'✈️'.repeat(n)}`);
+};
+
+planesInLine(5);
+planesInLine();
