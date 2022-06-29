@@ -53,7 +53,6 @@ const greet = function (greeting) {
 const greet = greeting => name => console.log(`${greeting} ${name}`);
 greet('Hey')('Kacper');
 
-*/
 const lufthansa = {
   airline: 'Lufthansa',
   iataCode: 'LH',
@@ -61,28 +60,116 @@ const lufthansa = {
   book(flightNum, name) {
     console.log(
       `${name} booked a seat on ${this.airline} plane, number: ${this.iataCode}${flightNum}`
-    );
-  },
+      );
+      this.bookings.push([name, flightNum]);
+    },
+  };
+  
+  lufthansa.book('2356', 'Kacper');
+  lufthansa.book('111', 'Tomek');
+  
+  const book = lufthansa.book;
+  
+  const euroWings = {
+    airline: 'EuroWings',
+    iataCode: 'EW',
+    bookings: [],
+  };
+  
+  book.call(euroWings, 567, 'Jarek');
+  
+  const swiss = {
+    airline: 'Swiss AirLines Co.',
+    iataCode: 'SS',
+    bookings: [],
+  };
+  
+  book.call(swiss, 222, 'Arek');
+  book.apply(swiss, [2111, 'Ala']);
+  
+  //bind
+  const bookEW = book.bind(euroWings);
+  const bookLH = book.bind(lufthansa);
+bookEW(23, 'Janusz');
+
+const bookEW23 = book.bind(euroWings, 23);
+bookEW23('Czarek');
+
+lufthansa.planes = 300;
+lufthansa.buyPlane = function () {
+  this.planes++;
+  console.log(this);
+  console.log(this.planes);
 };
 
-lufthansa.book('2356', 'Kacper');
-lufthansa.book('111', 'Tomek');
+document
+.querySelector('.buy')
+.addEventListener('click', lufthansa.buyPlane.bind(lufthansa));
 
-const book = lufthansa.book;
+//Partial apliccation
+const addTax = (rate, value) => value + value * rate;
 
-const euroWings = {
-  airline: 'EuroWings',
-  iataCode: 'EW',
-  bookings: [],
+console.log(addTax(0.1, 50));
+
+const addTaxFood = addTax.bind(null, 0.23);
+
+console.log(addTaxFood(100));
+
+const addTaxes = rate => value => value + rate * value;
+
+console.log(addTaxes(0.2)(20));
+
+
+(() => {
+  console.log('this will never run again');
+})();
+
+//clousre
+const secureBooking = function () {
+  let passangerCount = 0;
+  return function () {
+    passangerCount++;
+    console.log(passangerCount + ' passengers');
+  };
 };
 
-book.call(euroWings, 567, 'Jarek');
+const booker = secureBooking();
 
-const swiss = {
-  airline: 'Swiss AirLines Co.',
-  iataCode: 'SS',
-  bookings: [],
+booker();
+booker();
+booker();
+
+*/
+let f;
+
+const g = function () {
+  const a = 23;
+  f = function () {
+    console.log(a * 2);
+  };
 };
 
-book.call(swiss, 222, 'Arek');
-book.apply(swiss, [2111, 'Ala']);
+const h = function () {
+  const b = 777;
+  f = function () {
+    console.log(b * 2);
+  };
+};
+
+g();
+f();
+console.dir(f);
+h();
+f();
+console.dir(f);
+
+const boardPassengers = (n, wait) => {
+  const perGroup = n / 3;
+  setTimeout(function () {
+    console.log(`We are now boarding all ${n} passangers`);
+    console.log(`There are 3 groups, each with ${perGroup} persons`);
+  }, wait * 1000);
+  console.log(`Will start boarding in ${wait} seconds`);
+};
+
+boardPassengers(30, 3);
