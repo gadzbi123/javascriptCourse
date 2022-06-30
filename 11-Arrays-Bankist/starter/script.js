@@ -62,9 +62,9 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 const displayMovements = movements => {
+  containerMovements.innerHTML = '';
   movements.forEach((mov, i) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
-
     const html = `  
           <div class="movements__row">
             <div class="movements__type movements__type--${type}">
@@ -77,15 +77,99 @@ const displayMovements = movements => {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-
 displayMovements(account1.movements);
 
+const createUsernames = function (accs) {
+  accs.forEach(acc => {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  });
+};
+
+createUsernames(accounts);
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+const calcDisplayBalance = function (movements) {
+  labelBalance.textContent =
+    movements.reduce((acc, mov) => acc + mov, 0) + ' €';
+};
+calcDisplayBalance(account1.movements);
+
+const calcDisplaySummary = function (movements) {
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((sum, mov) => sum + mov);
+  labelSumIn.textContent = incomes + '€';
+
+  const out = movements.filter(mov => mov < 0).reduce((sum, mov) => sum + mov);
+  labelSumOut.textContent = Math.abs(out) + '€';
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 120) / 10000)
+    .filter(int => int >= 1)
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = interest + '€';
+};
+calcDisplaySummary(account1.movements);
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const euroToUsd = 1.1;
 
+const totalDepositInUsd = movements
+  .filter(mov => mov > 0)
+  // .map((mov, _, arr) => {
+  //   console.log(arr);
+
+  //   return euroToUsd * mov;
+  // })
+  .map(mov => euroToUsd * mov)
+  .reduce((sum, mov) => sum + mov);
+
+// console.log(totalDepositInUsd);
+
+/*
+//Max value of movements
+
+const maxMov = movements.reduce(
+  (acc, mov) => (acc <= mov ? mov : acc),
+  Number.MIN_VALUE
+);
+
+const accum = movements.reduce((acc, curr, i, arr) => {
+  console.log(`it num: ${i}, acc=${acc}`);
+
+  return acc + curr;
+}, 0);
+console.log(accum);
+
+const deposits = movements.filter(mov => mov > 0);
+console.log(deposits);
+
+const withdrawals = movements.filter(mov => mov < 0);
+console.log(withdrawals);
+const eurToUsd = 1.1;
+const movUsd = movements.map(mov => mov * eurToUsd);
+
+// const movementsUsd = [];
+// for (const mov of movements) {
+//   movementsUsd.push(mov * eurToUsd);
+// }
+// console.log(movementsUsd);
+
+const movmnt = movements.map(
+  (mov, i) => `el ${i} ${mov > 0 ? 'deposit' : 'withdrawal'}: ${Math.abs(mov)}`
+);
+
+console.log(movmnt);
+console.log(movements);
+console.log(movUsd);
+*/
 /////////////////////////////////////////////////
 
 // const arr = [23, 11, 64];
