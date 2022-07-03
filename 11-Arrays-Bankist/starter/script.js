@@ -60,10 +60,13 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+let isSort = false;
 
-const displayMovements = movements => {
+const displayMovements = (movements, sort = false) => {
   containerMovements.innerHTML = '';
-  movements.forEach((mov, i) => {
+
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  movs.forEach((mov, i) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `  
           <div class="movements__row">
@@ -78,11 +81,11 @@ const displayMovements = movements => {
   });
 };
 
-const updateUI = (acc) => {
-  displayMovements(acc.movements);
+const updateUI = acc => {
+  displayMovements(acc.movements, isSort);
   calcDisplayBalance(acc);
   calcDisplaySummary(acc);
-}
+};
 
 const createUsernames = function (accs) {
   accs.forEach(acc => {
@@ -96,7 +99,6 @@ const createUsernames = function (accs) {
 createUsernames(accounts);
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
 const calcDisplayBalance = function (account) {
   const balance = (account.balance = account.movements.reduce(
     (acc, mov) => acc + mov,
@@ -150,26 +152,137 @@ btnTransfer.addEventListener('click', e => {
   e.preventDefault();
 
   const amount = Number(inputTransferAmount.value);
-  
+
   const reciverAcc = accounts.find(
-    acc => acc.username === inputTransferTo.value);
+    acc => acc.username === inputTransferTo.value
+  );
 
-
-    if (
-      amount > 0 && reciverAcc && currentAccount.balance >= amount &&
-         reciverAcc?.owner !== currentAccount.owner) {
-      currentAccount.movements.push(-1 * amount);
-      reciverAcc.movements.push(amount);
-      updateUI(currentAccount);
-    }
-    inputTransferAmount.value = inputTransferTo.value = '';
+  if (
+    amount > 0 &&
+    reciverAcc &&
+    currentAccount.balance >= amount &&
+    reciverAcc?.owner !== currentAccount.owner
+  ) {
+    currentAccount.movements.push(-1 * amount);
+    reciverAcc.movements.push(amount);
+    updateUI(currentAccount);
   }
+  inputTransferAmount.value = inputTransferTo.value = '';
+});
+
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      acc => currentAccount.username === acc.username
+    );
+    console.log(index);
+
+    accounts.splice(index, 1);
+
+    //hide ui
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = '';
+});
+
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+  isSort = !isSort;
+  updateUI(currentAccount);
 });
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
-/*)
+/*
+const x = new Array(7);
+x.fill(0, 0, 3);
+x.fill(6, 3);
+console.log(x);
+
+const y = Array.from({ length: 7 }, () => 1);
+console.log(y);
+
+const z = Array.from({ length: 7 }, (_, key) => key + 1);
+console.log(z);
+
+const diceRolls = Array.from({ length: 100 }, () =>
+  Math.round(1 + Math.random() * 5)
+);
+console.log(diceRolls);
+const amount = diceRolls.reduce((acc, value) => {
+  acc[value - 1] += 1;
+  return acc;
+}, new Array(6).fill(0));
+console.log(amount);
+
+const maxValue = amount.reduce(
+  (iMax, curr, i, arr) => (curr > arr[iMax] ? i : iMax),
+  0
+);
+console.log(
+  `The most throws had number: ${maxValue + 1} with ${Math.max(
+    ...amount
+  )} throws`
+);
+
+const arr = [3, 28, 25, 14, 99];
+const wynik = arr.reduce((acc, curr) => {
+  if (curr > 2 && curr < 25) acc.push(curr);
+  return acc;
+}, []);
+console.log(wynik);
+
+const owners = ['Kacper', 'Ala', 'Ewa', 'Tomek'];
+console.log(owners.sort());
+console.log(owners);
+
+console.log(movements);
+console.log(movements.sort((a, b) => b - a));
+
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+const arrDeep = [[1, 2, [3.3, 3.4, 3.5]], [4, [5, [6.6, 6.7, 6.8]]], 7, 8];
+console.log(arr.flat(2));
+console.log(arrDeep.flat());
+console.log(arrDeep.flat(2));
+console.log(arrDeep.flat(3));
+
+const accountMovements = accounts.map(acc => acc.movements);
+console.log(accountMovements);
+const allMovements = accountMovements.flat();
+console.log(allMovements);
+
+const sum = allMovements.reduce((acc, mov) => (acc += mov), 0);
+console.log(sum);
+
+const sumShort = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => (acc += mov), 0);
+
+console.log(sumShort);
+console.log(movements.every(mov => typeof mov === 'number'));
+console.log(movements.every(mov => mov > 100));
+
+console.log(movements.includes(-130));
+console.log(movements.some(mov => mov > 5000));
+console.log(movements);
+
+
 const x = movements.find(value => {
   if (value > 5000 && value < 4000) return true;
 });
