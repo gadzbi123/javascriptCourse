@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -21,9 +21,9 @@ const account1 = {
     '2020-01-28T09:15:04.904Z',
     '2020-04-01T10:17:24.185Z',
     '2020-05-08T14:11:59.604Z',
-    '2020-05-27T17:01:17.194Z',
-    '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2021-09-27T17:01:17.194Z',
+    '2022-07-04T21:36:17.929Z',
+    '2022-07-03T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -77,24 +77,49 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+const dateNow = new Date();
 
 /////////////////////////////////////////////////
 // Functions
 
-const displayMovements = function (movements, sort = false) {
+const formatMovementDate = date => {
+  const daysBetween = (d1, d2) => {
+    const days = Math.floor(Math.abs((d1 - d2) / 1000 / 3600 / 24));
+    if (days === 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7) return `${Math.trunc(days)} days ago`;
+    else return; //?
+  };
+  const day = date.getDate().toString().padStart(2, 0);
+  const month = (date.getMonth() + 1).toString().padStart(2, 0);
+  const year = date.getFullYear();
+  const displayDate = `${day}/${month}/${year}`;
+
+  if (daysPassed === undefined) daysPassed = displayDate();
+
+  return displayDate;
+};
+
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements;
 
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(acc.movementsDates[i]);
+    const displayDate = formatMovementDate(date);
 
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movements__value">${mov}€</div>
+        <div class="movements__date">${displayDate}</div>
+        <div class="movements__value">${mov.toFixed(2)}€</div>
       </div>
     `;
 
@@ -111,12 +136,12 @@ const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = `${Math.abs(out.toFixed(2))}€`;
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -126,7 +151,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 };
 
 const createUsernames = function (accs) {
@@ -142,7 +167,7 @@ createUsernames(accounts);
 
 const updateUI = function (acc) {
   // Display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
 
   // Display balance
   calcDisplayBalance(acc);
@@ -155,6 +180,10 @@ const updateUI = function (acc) {
 // Event handlers
 let currentAccount;
 
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
+
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
   e.preventDefault();
@@ -164,12 +193,20 @@ btnLogin.addEventListener('click', function (e) {
   );
   console.log(currentAccount);
 
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     // Display UI and message
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(' ')[0]
     }`;
     containerApp.style.opacity = 100;
+
+    //current date
+    const day = dateNow.getDate().toString().padStart(2, 0);
+    const month = (dateNow.getMonth() + 1).toString().padStart(2, 0);
+    const year = dateNow.getFullYear();
+    const hour = dateNow.getHours().toString().padStart(2, 0);
+    const minute = dateNow.getMinutes().toString().padStart(2, 0);
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
 
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
@@ -182,7 +219,7 @@ btnLogin.addEventListener('click', function (e) {
 
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
-  const amount = Number(inputTransferAmount.value);
+  const amount = +inputTransferAmount.value;
   const receiverAcc = accounts.find(
     acc => acc.username === inputTransferTo.value
   );
@@ -197,6 +234,9 @@ btnTransfer.addEventListener('click', function (e) {
     // Doing the transfer
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
+    // Adding transfer date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
 
     // Update UI
     updateUI(currentAccount);
@@ -206,11 +246,14 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
     currentAccount.movements.push(amount);
+
+    // Add movement
+    currentAccount.movementsDates.push(new Date().toISOString());
 
     // Update UI
     updateUI(currentAccount);
@@ -223,7 +266,7 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
@@ -251,3 +294,77 @@ btnSort.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+const future = new Date(2037, 10, 19, 15, 23, 5);
+const now = new Date();
+
+const daysBetween = (d1, d2) =>
+  Math.floor(Math.abs((d1 - d2) / 1000 / 3600 / 24));
+console.log(daysBetween(future, now));
+/*
+
+const now = new Date();
+const future = new Date(2037, 10, 19, 15, 23, 5);
+console.log(now);
+console.log(Date.now());
+
+console.log(new Date(account1.movementsDates[0]));
+
+console.log(new Date(2037, 10, 19, 15, 23, 5, 55));
+
+console.log(new Date(0));
+console.log(new Date(365 * 24 * 60 * 60 * 1000));
+console.log(now.getFullYear());
+console.log(now.getMonth());
+console.log(now.getDate());
+console.log(now.getDay());
+console.log(now.getHours());
+console.log(now.getMinutes());
+console.log(now.getSeconds());
+console.log(now.getMilliseconds());
+const timeLeft = future.getTime() - now.getTime();
+console.log(Math.floor(timeLeft / 1000 / 3600 / 24 / 365.25));
+
+//numeric separator
+const diameter = 287_460_000_000;
+console.log(diameter);
+const prize = 345_99;
+console.log(prize);
+
+Number.MAX_SAFE_INTEGER;
+console.log(2463474584345334655485838343443735973597953n);
+console.log(BigInt(24635973597953));
+console.log(100000n + 1000000n);
+
+const huge = 2135346457568537263246363n;
+const regular = 21;
+console.log(huge * BigInt(regular));
+
+
+labelBalance.addEventListener('click', e =>
+  [...document.querySelectorAll('.movements__row')].forEach(function (row, i) {
+    if (i % 2 === 1) row.style.backgroundColor = 'red';
+    if (i % 3 === 0) row.style.backgroundColor = 'green';
+  })
+);
+console.log(23 === 22.9 + 0.1);
+//conver
+console.log(Number(23));
+console.log('23');
+console.log(+'23');
+
+//parse
+console.log(Number.parseInt('23deg'));
+console.log(Number.parseFloat('23.3rem'));
+console.log(22 / 0);
+console.log(Number.isNaN(22 / 0));
+console.log(Number.isFinite(22 / 0));
+console.log(Number.isFinite(22));
+console.log(+'22A');
+console.log(Number.isNaN(+'22A'));
+
+console.log(Number.isInteger(+'22'));
+
+console.log(Math.PI * Number.parseFloat('10px') ** 2);
+
+console.log(+(2.777).toFixed(2));
+*/

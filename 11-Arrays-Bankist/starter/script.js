@@ -208,7 +208,54 @@ btnSort.addEventListener('click', e => {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+//1
+const bankDepositSum = accounts
+  .flatMap(acc => acc.movements)
+  .filter(value => value > 0)
+  .reduce((acc, mov) => (acc += mov), 0);
+console.log(bankDepositSum);
+//2
+const numDeposits1000 = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov > 1000).length;
 
+console.log(numDeposits1000);
+const numDeposits1000_2 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((accum, mov) => (mov > 1000 ? ++accum : accum), 0);
+console.log(numDeposits1000_2);
+
+//3.
+const { deposits, withdrawals } = accounts
+  .flatMap(acc => acc.movements)
+  .reduce(
+    (sums, mov) => {
+      // mov > 0 ? (sums.deposits += mov) : (sums.withdrawals += mov);
+      sums[mov > 0 ? 'deposits' : 'withdrawals'] += mov;
+      return sums;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+console.log(deposits, withdrawals);
+
+//4.
+let str = 'this is a nice title and sth';
+let str2 = 'And this is an aligator with a huge nose and bruses';
+
+const capitalizeString = str => str[0].toUpperCase() + str.slice(1);
+const titleCase = str => {
+  const exeptions = ['a', 'an', 'and', 'the', 'but', 'or', 'on', 'in', 'with'];
+  let newStr = str
+    .slice()
+    .toLowerCase()
+    .split(' ')
+    .map(word => (exeptions.includes(word) ? word : capitalizeString(word)))
+    .join(' ');
+
+  console.log(capitalizeString(newStr));
+};
+titleCase(str);
+titleCase(str2);
 /*
 const x = new Array(7);
 x.fill(0, 0, 3);

@@ -79,6 +79,94 @@ const displayMovements = movements => {
 };
 displayMovements(account1.movements);
 
+///////////////////
+// Coding Challenge #4
+
+/* 
+Julia and Kate are still studying dogs, and this time they are studying if dogs are eating too much or too little.
+Eating too much means the dog's current food portion is larger than the recommended portion, and eating too little is the opposite.
+Eating an okay amount means the dog's current food portion is within a range 10% above and 10% below the recommended portion (see hint).
+
+1. Loop over the array containing dog objects, and for each dog, calculate the recommended food portion and add it to the object as a new property. Do NOT create a new array, simply loop over the array. Forumla: recommendedFood = weight ** 0.75 * 28. (The result is in grams of food, and the weight needs to be in kg)
+2. Find Sarah's dog and log to the console whether it's eating too much or too little. HINT: Some dogs have multiple owners, so you first need to find Sarah in the owners array, and so this one is a bit tricky (on purpose) 🤓
+3. Create an array containing all owners of dogs who eat too much ('ownersEatTooMuch') and an array with all owners of dogs who eat too little ('ownersEatTooLittle').
+4. Log a string to the console for each array created in 3., like this: "Matilda and Alice and Bob's dogs eat too much!" and "Sarah and John and Michael's dogs eat too little!"
+5. Log to the console whether there is any dog eating EXACTLY the amount of food that is recommended (just true or false)
+6. Log to the console whether there is any dog eating an OKAY amount of food (just true or false)
+7. Create an array containing the dogs that are eating an OKAY amount of food (try to reuse the condition used in 6.)
+8. Create a shallow copy of the dogs array and sort it by recommended food portion in an ascending order (keep in mind that the portions are inside the array's objects)
+
+HINT 1: Use many different tools to solve these challenges, you can use the summary lecture to choose between them 😉
+HINT 2: Being within a range 10% above and below the recommended portion means: current > (recommended * 0.90) && current < (recommended * 1.10). Basically, the current portion should be between 90% and 110% of the recommended portion.
+
+*/
+// TEST DATA:
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+  { weight: 13, curFood: 200, owners: ['Kacper'] },
+];
+
+const eatingGoodBool = dog =>
+  dog.curFood > dog.recommendedFood * 0.9 &&
+  dog.curFood < dog.recommendedFood * 1.1
+    ? true
+    : false;
+
+const eatingGoodStr = dog =>
+  dog.curFood > dog.recommendedFood * 0.9 &&
+  dog.curFood < dog.recommendedFood * 1.1
+    ? 'Dog is eating well'
+    : "Dog isn't eating well";
+
+dogs.forEach(
+  dog => (dog.recommendedFood = Math.round(dog.weight ** 0.75 * 28))
+);
+console.log(dogs);
+//2
+const [sarahsDog] = dogs.filter(dog => dog.owners.includes('Sarah'));
+console.log("sara's dog", sarahsDog, eatingGoodStr(sarahsDog));
+//3
+const ownersEatTooMuch = dogs
+  .filter(dog => dog.recommendedFood * 1.1 < dog.curFood)
+  .flatMap(dog => dog.owners);
+const ownersEatTooLittle = dogs
+  .filter(dog => dog.recommendedFood * 0.9 > dog.curFood)
+  .flatMap(dog => dog.owners);
+console.log('To much:', ownersEatTooMuch);
+console.log('To little:', ownersEatTooLittle);
+
+//4
+function logBadFood(owners, tooMuch) {
+  const strOwners = owners
+    .slice()
+    .map(owner => (owner += "'s"))
+    .join(' and ');
+  console.log(
+    `${strOwners} dogs eat ${tooMuch === true ? 'too much!' : 'too little!'}`
+  );
+}
+logBadFood(ownersEatTooMuch, true);
+logBadFood(ownersEatTooLittle, false);
+
+//5
+console.log(dogs.some(dog => dog.curFood === dog.recommendedFood));
+//6
+console.log(dogs.some(dog => eatingGoodBool(dog)));
+//7
+const dogsEatOk = dogs.reduce((dogsEatOk, dog) => {
+  eatingGoodBool(dog) ? dogsEatOk.push(dog) : '';
+  return dogsEatOk;
+}, []);
+console.log(dogsEatOk);
+//8
+const dogs_copy = Array.from(dogs).sort((a, b) => a.curFood - b.curFood);
+console.log(dogs_copy);
+
+// GOOD LUCK 😀
+
 /* 
 Rewrite the 'calcAverageHumanAge' function from the previous challenge, but this time as an arrow function, and using chaining!
 
@@ -86,18 +174,18 @@ TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
 TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
 
 GOOD LUCK 😀
-*/
 const Kate_data1 = [16, 6, 10, 5, 6, 1, 4];
 
 const calcAverageHumanAge = ages => {
   const avg = ages
-    .map(age => (age <= 2 ? age * 2 : 16 + age * 4))
-    .filter(age => age > 17)
-    .reduce((sum, age, _, arr) => sum + age / arr.length, 0);
+  .map(age => (age <= 2 ? age * 2 : 16 + age * 4))
+  .filter(age => age > 17)
+  .reduce((sum, age, _, arr) => sum + age / arr.length, 0);
   console.log(avg);
 };
 calcAverageHumanAge(Kate_data1);
 
+*/
 /* 
 Let's go back to Julia and Kate's study about dogs. This time, they want to convert dog ages to human ages and calculate the average age of the dogs in their study.
 
