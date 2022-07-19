@@ -213,6 +213,7 @@ TEST DATA: Images in the img folder. Test the error handler by passing a wrong i
 
 GOOD LUCK 😀
 */
+/*
 const wait = function (secs) {
   return new Promise(resolve => {
     setTimeout(resolve, 1000 * secs);
@@ -263,3 +264,97 @@ createImage('./img/img-1.jpg')
     return wait(2);
   })
   .catch(e => console.error(e));
+  
+  const getPosition = function () {
+    return new Promise(function (resolve, reject) {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+  };
+  
+  // fetch(`https://restcountries.eu/rest/v2/name/${country}`).then(res => console.log(res))
+  
+  const whereAmI = async function () {
+    try {
+      // Geolocation
+      const pos = await getPosition();
+      const { latitude: lat, longitude: lng } = pos.coords;
+      
+      // Reverse geocoding
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?json=1`);
+    
+    const dataGeo = await resGeo.json();
+    console.log(dataGeo);
+    // Country data
+    const res = await fetch(`https://restcountries.com/v3.1/name/poland`);
+    
+    if (!res.ok) throw new Error(`didn't found a correct country`);
+    
+    const data = await res.json();
+    renderCountry(data[0]);
+    return `you are in ${data[0].capital[0]}, ${data[0].name.common}`;
+  } catch (e) {
+    console.error(e);
+    throw e.message;
+  }
+};
+
+// btn.addEventListener('click', whereAmI.call(undefined, 'Poland'));
+
+// console.log('first');
+// whereAmI()
+//   .then(x => console.log(x))
+//   .catch(e => console.error(e))
+//   .finally(() => console.log('end'));
+
+(async function () {
+  let str;
+  try {
+    str = await whereAmI();
+  } catch (e) {
+    str = e.message;
+  } finally {
+    console.log('start');
+    
+    console.log(str);
+    console.log('end');
+  }
+})();
+*/
+
+const getJson = function (url, errorMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errorMsg} ${response.status}`);
+    return response.json();
+  });
+};
+
+const countries = ['poland', 'germany', 'italy'];
+const capitals = async countries => {
+  try {
+    const data = await Promise.race([
+      getJson(`https://restcountries.com/v3.1/name/${countries[0]}`),
+      getJson(`https://restcountries.com/v3.1/name/${countries[1]}`),
+      getJson(`https://restcountries.com/v3.1/name/${countries[2]}`),
+    ]);
+
+    console.log(data[0].capital[0]); //.flatMap(d => d[0].capital));
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+capitals(countries);
+
+const timeout = function (sec) {
+  return new Promise(function (_, reject) {
+    setTimeout(function () {
+      reject(new Error('Request took too long'));
+    }, sec * 1000);
+  });
+};
+
+Promise.race([
+  getJson(`https://restcountries.com/v3.1/name/tanzania`),
+  timeout(0.25),
+])
+  .then(res => console.log(res[0]))
+  .catch(e => console.log(e.message));
