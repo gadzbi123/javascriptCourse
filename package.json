@@ -18,5 +18,9 @@
   "homepage": "https://github.com/gadzbi123/javascriptCourse#readme",
   "devDependencies": {
     "eslint": "^8.18.0"
+  },
+  "dependencies": {
+    "core-js": "^3.23.5",
+    "regenerator-runtime": "^0.13.9"
   }
 }
