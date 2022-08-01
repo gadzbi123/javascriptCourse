@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "core-js": "^3.23.5",
+    "parcel": "^2.6.2",
     "regenerator-runtime": "^0.13.9"
   }
 }

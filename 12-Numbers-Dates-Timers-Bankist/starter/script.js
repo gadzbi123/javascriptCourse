@@ -95,7 +95,7 @@ const formatMovementDate = date => {
   const year = date.getFullYear();
   const displayDate = `${day}/${month}/${year}`;
 
-  if (daysPassed === undefined) daysPassed = displayDate();
+  // if (daysPassed === undefined) daysPassed = displayDate();
 
   return displayDate;
 };
@@ -294,13 +294,51 @@ btnSort.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+
+setTimeout(
+  (c1, c2) => {
+    console.log(`Given colors from shelf ${c1} and ${c2}`);
+  },
+  3000,
+  'black',
+  'red'
+);
+
+const showDate = setInterval(function () {
+  const now = new Date();
+  console.log(`It's ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`);
+}, 1000);
+// showDate();
+
+const startLogOutTimer = function (mins) {
+  let minCurrent = mins;
+  let secCurrent = 0;
+  console.log(`Time left: ${minCurrent}:${secCurrent}`);
+
+  //Call the timer every sec
+  const countDown = setInterval(() => {
+    secCurrent--;
+    if (secCurrent < 0) {
+      minCurrent--;
+      secCurrent = 59;
+    }
+    //init each call print time
+    console.log(`Time left: ${minCurrent}:${secCurrent}`);
+  }, 1000);
+  //when time = 0; stop timer and write
+  setTimeout(() => {
+    clearInterval(countDown);
+    console.log('No time left');
+  }, mins * 60 * 1000);
+};
+startLogOutTimer(1);
+/*
 const future = new Date(2037, 10, 19, 15, 23, 5);
 const now = new Date();
 
 const daysBetween = (d1, d2) =>
   Math.floor(Math.abs((d1 - d2) / 1000 / 3600 / 24));
 console.log(daysBetween(future, now));
-/*
 
 const now = new Date();
 const future = new Date(2037, 10, 19, 15, 23, 5);
