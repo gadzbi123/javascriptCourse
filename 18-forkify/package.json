@@ -9,7 +9,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.6.2",
-    "parcel": "^2.6.2"
+    "@parcel/transformer-image": "^2.0.0-nightly.2400",
+    "@parcel/transformer-sass": "^2.0.0-nightly.778",
+    "parcel": "^2.0.0-beta.1",
+    "sass": "^1.26.10"
+  },
+  "dependencies": {
+    "core-js": "^3.24.1",
+    "fractional": "^1.0.0",
+    "regenerator-runtime": "^0.13.9"
   }
 }
